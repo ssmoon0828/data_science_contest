@@ -97,7 +97,7 @@ describe = gas_household_sort['가스사용비율'].describe()
 gas_household_boxplot = plt.figure(figsize = (12, 12))
 plt.boxplot(gas_household_sort['가스사용비율'])
 plt.show()
-gas_household_boxplot.savefig('gast_household_boxplot.png', dpi = 200)
+gas_household_boxplot.savefig('gas_household_boxplot.png', dpi = 200)
 
 # 이상치
 IQR = describe['75%'] - describe['25%'] # IQR : 3분위수 - 1분위수
@@ -129,7 +129,7 @@ gas_household_sort['주소'] = address
 gas_household_sort['lat'] = lat
 gas_household_sort['lng'] = lng
 
-gas_household_sort.to_csv('gas_household_sort.csv')
+gas_household_sort.to_csv('gas_household_sort.csv', index = False)
 
 # folium을 이용한 시각화
 gmaps.geocode('덕수궁', language = 'ko') # lat : 37.5658049, lng : 126.9751461 , 덕수궁을 지도의 중심점으로 잡았다.
