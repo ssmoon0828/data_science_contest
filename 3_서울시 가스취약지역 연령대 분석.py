@@ -115,3 +115,15 @@ corr_df = seoul.corr()
     # 가스사용비율이 적은 지역과 연령대와는 별로 상관이 없는것으로 보였다.
 
 
+#%% 취약지역만 따로 뽑아서 분석
+seoul = pd.read_csv('C:/Users/a/Desktop/seoul.csv')
+seoul_low = seoul.head(28)
+seoul_high = seoul.tail(25)
+seoul_outlier = pd.concat([seoul_low, seoul_high])
+corr_df = seoul.corr()
+
+plt.scatter(seoul_outlier['1인세대비율'], seoul_outlier['2인세대비율'])
+plt.xlabel('1인세대비율')
+plt.ylabel('2인세대비율')
+plt.show()
+seoul.mean()

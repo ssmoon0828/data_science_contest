@@ -101,9 +101,10 @@ gas_household_boxplot.savefig('gas_household_boxplot.png', dpi = 200)
 
 # 이상치
 IQR = describe['75%'] - describe['25%'] # IQR : 3분위수 - 1분위수
-criteria = describe['25%'] - (1.5 * IQR) # 0.7459829494127482
-low_outlier = gas_household_sort.loc[gas_household_sort['가스사용비율'] < criteria]
-
+criteria_low = describe['25%'] - (1.5 * IQR) # 0.7459829494127482
+criteria_high = describe['75%'] + (1.5 * IQR) # 1.2129334237238805
+low_outlier = gas_household_sort.loc[gas_household_sort['가스사용비율'] < criteria_low] # 29개 데이터
+high_outlier = gas_household_sort.loc[gas_household_sort['가스사용비율'] > criteria_high] # 25개 데이터
 #%% 지도시각화
 
 # googlemaps를 통한 위도 경도 처리
@@ -150,18 +151,18 @@ for i in range(len(gas_household_sort)):
 
 map_seoul_radius.save('map_seoul_radius.html') # 대체적으로 산이 분포하는 행정동에 가스사용량이 낮은 것을 알 수 있다.
 
-# 가스사용량이 낮은 극단치 (가스사용량 0.7459829494127482미만, 하위 28개 데이터) 를 가지고 있는 행정동을 지도에 매핑
-map_seoul_top28 = folium.Map(location = [37.5658049, 126.9751461],
+# 가스사용량이 낮은 극단치 (가스사용량 0.7459829494127482미만, 하위 29개 데이터) 를 가지고 있는 행정동을 지도에 매핑
+map_seoul_top29 = folium.Map(location = [37.5658049, 126.9751461],
                              zoom_start = 12)
 
-for i in range(28):
+for i in range(29):
     location = [gas_household_sort['lat'][i], gas_household_sort['lng'][i]]
     
     folium.Marker(location = location,
                   icon = folium.Icon(color = 'red'),
                   popup = '[' + gas_household_sort['지도코드'][i] + ']' + '\n' +\
-                  str(gas_household_sort['가스사용비율'][i])).add_to(map_seoul_top28)
+                  str(gas_household_sort['가스사용비율'][i])).add_to(map_seoul_top29)
 
-map_seoul_top28.save('map_seoul_top28.html')  # 대체적으로 산이 분포하는 행정동에 가스사용량이 낮은 것을 알 수 있다.
+map_seoul_top29.save('map_seoul_top29.html')  # 대체적으로 산이 분포하는 행정동에 가스사용량이 낮은 것을 알 수 있다.
 
 #%% 통계적 해석
