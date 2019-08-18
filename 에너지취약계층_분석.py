@@ -44,6 +44,7 @@ raw_disability = pd.read_excel('C:/Users/ssmoo/Desktop/data_science_contest/원�
                                skiprows = [0, 1],
                                na_values = ['-'])
 
+<<<<<<< HEAD
 # 동별 혼인 이혼 데이터
 raw_marrydivorce = pd.read_excel('C:/Users/ssmoo/Desktop/data_science_contest/원래데이터/2018_동별_혼인이혼.xls',
                                  na_values = ['-'])
@@ -57,6 +58,12 @@ raw_gas = pd.read_excel('C:/Users/ssmoo/Desktop/공공데이터/데이터/2018_�
 raw_fire = pd.read_excel('file:///C:/Users/ssmoo/Desktop/data_science_contest/원래데이터/2018_동별_화재발생_장소별.xls',
                          na_values = ['-'],
                          skiprows = [0])
+=======
+# 동별 기초생활수급자 데이터
+raw_baselife = pd.read_excel('C:/Users/a/Desktop/data_science_contest/원래데이터/2018_동별_국민기초생활보장수급자.xls',
+                             skiprows = [0],
+                             na_values = '-')
+>>>>>>> e92a5c77557df964e328ee96ebc8545433dc9e1a
 #%% 데이터 전처리
 
 #%%동별 세대수 데이터 전처리
@@ -64,9 +71,16 @@ family = raw_family.copy()
 family = family.fillna(0)
 
 # 필요없는 데이터 제거
+<<<<<<< HEAD
 family = family.loc[(family['자치구'] != '합계') &\
                           (family['행정동'] != '합계') &\
                           (family['행정동'] != '소계')]
+=======
+household = household.loc[(household['자치구'] != '합계') &\
+                          (household['행정동'] != '합계') &\
+                          (household['행정동'] != '소계') &\
+                          (household['행정동'] != '염리동')] # 다른 데이터에는 염리동, 둔촌1동 데이터가 없다.
+>>>>>>> e92a5c77557df964e328ee96ebc8545433dc9e1a
 
 # 분리되어 있는 기간들을 평균으로 통일
 family = family.groupby(['자치구', '행정동']).mean()
@@ -271,6 +285,7 @@ disability = disability.sort_values(['자치구', '행정동'])
 # csv파일로 저장
 disability.to_csv('disability.csv', index = False)
 
+<<<<<<< HEAD
 #%% 동별 혼인 이혼
 marrydivorce = raw_marrydivorce.copy()
 
@@ -332,6 +347,42 @@ fire = fire.loc[(fire['자치구'] != '합계') &\
 fire = fire[['자치구', '행정동', '화재발생수']]
 
 # 자치구 행정동 가나다순 배열
+=======
+#%% 동별 기초생활 수급자 데이터 전처리
+baselife = raw_baselife.copy()
+
+# 변수 이름 수정
+baselife = baselife.rename(columns = {'동' : '행정동',
+                                      '가구' : '기초생활수급가구수',
+                                      '인원' : '기초생활수급인원수'})
+# 필요없는 데이터 제거
+baselife = baselife.loc[(baselife['자치구'] != '합계') &\
+                        (baselife['자치구'] != '본청') &\
+                        (baselife['행정동'] != '합계') &\
+                        (baselife['행정동'] != '본청') &\
+                        (baselife['행정동'] != '소계') &\
+                        (baselife['행정동'] != '기타') &\
+                        (baselife['행정동'] != '염리동')]
+
+# 필요한 변수 추출
+baselife = baselife[['자치구', '행정동', '기초생활수급가구수', '기초생활수급인원수']]
+
+# 비율변수를 계산하기 위한 merge
+baselife = pd.merge(baselife, household, on = ['자치구', '행정동'])
+baselife = pd.merge(baselife, age, on = ['자치구', '행정동'])
+baselife['기초생활수급가구비율'] = baselife['기초생활수급가구수'] / baselife['전체세대수']
+baselife['기초생활수급인원비율'] = baselife['기초생활수급인원수'] / baselife['전체인구수']
+
+# 필요한 변수 추출
+baselife = baselife[['자치구', '행정동', '기초생활수급가구비율', '기초생활수급인원비율']]
+
+# 자치구 행정동 가나다순 배열
+baselife = baselife.sort_values(['자치구', '행정동'])
+
+# csv파일로 저장
+baselife.to_csv('baselife.csv', index = False)
+
+>>>>>>> e92a5c77557df964e328ee96ebc8545433dc9e1a
 #%% 데이터 통합
 
 # 행정동 데이터가 모두 같은지 확인
@@ -352,6 +403,7 @@ dong = pd.merge(dong, pop, on = ['자치구', '행정동'])
 dong = pd.merge(dong, popmove, on = ['자치구', '행정동'])
 dong = pd.merge(dong, oldsolo, on = ['자치구', '행정동'])
 dong = pd.merge(dong, disability, on = ['자치구', '행정동'])
+<<<<<<< HEAD
 dong = pd.merge(dong, marrydivorce, on = ['자치구', '행정동'])
 dong = pd.merge(dong, gas, on = ['자치구', '행정동'], how = 'left')
 dong = pd.merge(dong, fire, on = ['자치구', '행정동'], how = 'left')
@@ -365,6 +417,9 @@ dong.loc[dong['행정동'] == '둔촌1동', '화재발생수'] = np.mean(dong['�
 # 위도 경도 변수 추가
 gmaps_key = '**********************************'
 gmaps = googlemaps.Client(key = gmaps_key)
+=======
+dong = pd.merge(dong, baselife, on = ['자치구', '행정동'], how = 'left') # 둔촌1동 데이터를 지우지 않기 위해 left join
+>>>>>>> e92a5c77557df964e328ee96ebc8545433dc9e1a
 
 address = []
 lat = []
@@ -385,6 +440,7 @@ dong['lng'] = lng
 # dong 데이터  csv 파일로 저장
 dong.to_csv('dong.csv', index = False)
 #%% 데이터 분석
+<<<<<<< HEAD
 dong = pd.read_csv('C:/Users/ssmoo/Desktop/data_science_contest/전처리데이터/dong.csv')
 
 #%% 상관분석
@@ -396,6 +452,13 @@ dong_corr04 = dong_corr[abs(dong_corr) > 0.4]
 dong_corr05 = dong_corr[abs(dong_corr) > 0.5]
 dong_corr06 = dong_corr[abs(dong_corr) > 0.6]
 dong_corr07 = dong_corr[abs(dong_corr) > 0.7]
+=======
+dong = pd.read_csv('C:/Users/a/Desktop/data_science_contest/전처리데이터/dong.csv')
+gas = pd.read_csv('C:/Users/a/Desktop/data_science_contest/전처리데이터/gas.csv')
+household = pd.read_csv('C:/Users/a/Desktop/data_science_contest/전처리데이터/household.csv')
+age = pd.read_csv('C:/Users/a/Desktop/data_science_contest/전처리데이터/age.csv')
+disability = pd.read_csv('C:/Users/a/Desktop/data_science_contest/전처리데이터/disability.csv')
+>>>>>>> e92a5c77557df964e328ee96ebc8545433dc9e1a
 
 plt.scatter(dong['전체장애인비율'], dong['전체독거노인비율'])
 plt.hist(dong['전체독거노인비율'])
@@ -468,3 +531,12 @@ for i in range(29):
 
 map_dong_top29.save('map_dong_top29.html')  # 대체적으로 산이 분포하는 행정동에 가스사용량이 낮은 것을 알 수 있다.
 
+<<<<<<< HEAD
+=======
+#%% 상관분석
+corr_matrix = dong.corr()
+corr_matrix_4 = corr_matrix[abs(corr_matrix) > 0.4] # 상관계수가 0.4가 넘는 관계만 보기
+
+plt.scatter(dong['1인세대비율'], dong['전체장애인비율'])
+
+>>>>>>> e92a5c77557df964e328ee96ebc8545433dc9e1a
