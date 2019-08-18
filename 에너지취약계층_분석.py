@@ -363,7 +363,7 @@ dong.loc[dong['행정동'] == '돈암2동', '화재발생수'] = np.mean(dong['�
 dong.loc[dong['행정동'] == '둔촌1동', '화재발생수'] = np.mean(dong['화재발생수'])
 
 # 위도 경도 변수 추가
-gmaps_key = 'AIzaSyCjtmeThkkpApWjJAXwlc9BRzFes7J9zoA'
+gmaps_key = '**********************************'
 gmaps = googlemaps.Client(key = gmaps_key)
 
 address = []
@@ -393,6 +393,12 @@ dong_corr.to_csv('dong_corr.csv')
 
 # 상관계수가 0.4 이상인것만 확인
 dong_corr04 = dong_corr[abs(dong_corr) > 0.4]
+dong_corr05 = dong_corr[abs(dong_corr) > 0.5]
+dong_corr06 = dong_corr[abs(dong_corr) > 0.6]
+dong_corr07 = dong_corr[abs(dong_corr) > 0.7]
+
+plt.scatter(dong['전체장애인비율'], dong['전체독거노인비율'])
+plt.hist(dong['전체독거노인비율'])
 #%% 데이터 탐색
 
 # 기술통계
